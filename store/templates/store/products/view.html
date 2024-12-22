@@ -1,0 +1,91 @@
+{% extends 'store/layouts/main.html' %}
+
+{% block content %}
+<div class="py-4">
+    <div class="container">
+        <nav aria-label="breadcrumb">
+            <ol class="breadcrumb">
+                <li class="breadcrumb-item"><a href="{% url 'store:home' %}" class="text-dark">Home</a></li>
+                <li class="breadcrumb-item"><a href="{% url 'store:collections' %}" class="text-dark">Collections</a></li>
+                <li class="breadcrumb-item"><a href="{% url 'store:collectionsview' products.category.slug %}" class="text-dark">{{ products.category.name }}</a></li>
+                <li class="breadcrumb-item active" aria-current="page">{{ products.name }}</li>
+            </ol>
+        </nav>
+    </div>
+</div>
+
+<div class="py-5">
+    <div class="container product_data">
+        <div class="row">
+            <div class="col-md-6">
+                <div class="card shadow-sm">
+                    <img src="{{ products.product_image.url }}" class="card-img-top" alt="{{ products.name }}">
+                    {% if products.tag %}
+                    <span class="badge tag-badge bg-danger text-white rounded-pill position-absolute top-0 start-0 m-3 p-2">{{ products.tag }}</span>
+                    {% endif %}                
+                </div>
+            </div>
+
+            <div class="col-md-6">
+                <div class="product-details">
+                    <h2 class="fw-bold">{{ products.name }}</h2>
+                    {% if products.trending %}
+                    <span class="badge bg-danger trending-tag">Trending</span>
+                    {% endif %}
+                    <hr>
+                    <p class="text-muted"><s>Rs {{ products.original_price | floatformat:'f' }}</s> <span class="text-success fw-bold">Rs {{ products.selling_price | floatformat:'f' }}</span></p>
+                    <p class="mt-3">{{ products.small_description }}</p>
+
+                    <hr>
+                    <div class="stock-status mb-3">
+                        {% if products.quantity > 0 %}
+                        <span class="badge bg-success">In Stock</span>
+                        {% else %}
+                        <span class="badge bg-danger">Out of Stock</span>
+                        {% endif %}
+                    </div>
+
+                    <div class="quantity-selector mb-3">
+                        {% csrf_token %}
+                        <input type="hidden" value="{{ products.id }}" class="prod_id">
+                        <label for="quantity" class="form-label">Quantity</label>
+                        <div class="input-group mb-3" style="width: 150px;">
+                            <button class="input-group-text decrement-btn">-</button>
+                            <input type="number" class="form-control text-center qty-input" value="1" min="1" max="{{ products.quantity }}">
+                            <button class="input-group-text increment-btn">+</button>
+                        </div>
+                    </div>
+
+                    <div class="action-buttons">
+                        {% if products.quantity > 0 %}
+                        <button type="button" class="btn btn-primary me-3 addToCartBtn"><i class="fa fa-shopping-cart"></i> Add to Cart</button>
+                        {% endif %}
+                        <button type="button" class="btn btn-outline-danger addToWishlist"><i class="fa fa-heart"></i> Add to Wishlist</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="row mt-5">
+            <div class="col-md-12">
+                <div class="card shadow-sm">
+                    <div class="card-body">
+                        <h3 class="fw-bold">Description</h3>
+                        <p>{{ products.description }}</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<style>
+    /* Styling for the tag badge */
+.tag-badge {
+    font-size: 14px;  /* Adjust font size for better readability */
+    font-weight: 600;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);  /* Adding a subtle shadow */
+    z-index: 10;  /* Ensure the tag stays above the image */
+}
+
+</style>
+{% endblock %}
