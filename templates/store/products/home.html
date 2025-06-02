@@ -1,0 +1,90 @@
+{% extends 'store/layouts/main.html' %}
+{% block content %}
+
+<!-- Breadcrumb Section -->
+<section class="py-3">
+    <div class="container">
+        <nav aria-label="breadcrumb">
+            <ol class="breadcrumb mb-0">
+                <li class="breadcrumb-item">
+                    <a href="{% url 'store:home' %}" class="text-decoration-none text-primary fw-medium">Home</a>
+                </li>
+                <li class="breadcrumb-item">
+                    <a href="{% url 'store:collections' %}" class="text-decoration-none text-primary fw-medium">Collections</a>
+                </li>
+                <li class="breadcrumb-item active fw-bold text-truncate" style="max-width: 250px;" aria-current="page">
+                    Products
+                </li>
+            </ol>
+        </nav>
+    </div>
+</section>
+
+<!-- Header Section -->
+<section class="py-4">
+    <div class="container text-center">
+        <h1 class="display-4 fw-bold customclr2 mb-2">{{ category_name.name }}</h1>
+        <p class="text-muted fs-5 mb-3">Discover our curated selection of premium products in this category.</p>
+        <hr class="mx-auto bg-primary" style="width: 80px; border-width: 4px;">
+    </div>
+</section>
+
+<!-- Products Grid Section -->
+<section class="bg-light py-5">
+    <div class="container">
+        <div class="row row-cols-1 row-cols-sm-2 row-cols-md-3 row-cols-lg-4 g-4">
+            {% for item in products %}
+                <div class="col bg-light">
+                    <div class="card h-100 border-0 shadow-sm rounded-3 overflow-hidden">
+                        <a href="{% url 'store:productview' item.category.slug item.slug %}" 
+                           class="text-decoration-none">
+                            <!-- Product Image -->
+                            <div class="position-relative overflow-hidden" style="height: 250px;">
+                                <img src="{{ item.image.url }}" 
+                                     alt="{{ item.name }}" 
+                                     class="img-fluid w-100 h-100 object-fit-cover" 
+                                     style="transition: transform 0.3s ease;">
+                                {% if item.trending %}
+                                    <span class="badge bg-warning text-dark rounded-pill position-absolute top-0 start-0 m-2 px-3 py-1 fw-semibold">
+                                        Trending
+                                    </span>
+                                {% endif %}
+                            </div>
+                            <!-- Product Details -->
+                            <div class="card-body text-center">
+                                <h5 class="text-dark fw-semibold mb-2">{{ item.name }}</h5>
+                                <div class="d-flex justify-content-center align-items-center gap-3">
+                                    <span class="text-muted text-decoration-line-through fs-6">
+                                        ₹{{ item.original_price|floatformat:2 }}
+                                    </span>
+                                    <span class="text-success fw-bold fs-5">
+                                        ₹{{ item.selling_price|floatformat:2 }}
+                                    </span>
+                                </div>
+                            </div>
+                        </a>
+                    </div>
+                </div>
+            {% endfor %}
+        </div>
+        <!-- Empty State -->
+        {% if not products %}
+            <div class="text-center py-5">
+                <div class="card border-0 shadow-sm rounded-3 p-5 mx-auto" style="max-width: 500px;">
+                    <img src="https://cdn-icons-png.flaticon.com/512/2038/2038854.png" 
+                         alt="No Products" 
+                         class="mx-auto mb-3" 
+                         style="width: 120px;">
+                    <h4 class="text-dark fw-semibold">No Products Found</h4>
+                    <p class="text-muted mb-4">It seems there are no products in this category yet.</p>
+                    <a href="{% url 'store:collections' %}" 
+                       class="btn btn-primary rounded-pill px-4 py-2">
+                        <i class="bi bi-arrow-left me-2"></i> Back to Collections
+                    </a>
+                </div>
+            </div>
+        {% endif %}
+    </div>
+</section>
+
+{% endblock %}

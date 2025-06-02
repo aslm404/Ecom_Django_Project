@@ -1,133 +1,118 @@
 $(document).ready(function () {
+
+    // --- AJAX POST Wrapper ---
+    function postAjaxRequest(url, data, successCallback) {
+        $.ajax({
+            method: "POST",
+            url: url,
+            data: data,
+            success: successCallback,
+            error: function (xhr) {
+                console.error(xhr.responseText);
+            }
+        });
+    }
+
+    // --- Quantity Increment ---
     $('.increment-btn').click(function (e) {
         e.preventDefault();
+        let $data = $(this).closest('.product_data');
+        let $qtyInput = $data.find('.qty-input');
+        let maxQty = parseInt($qtyInput.attr('max')) || 10;
+        let qty = parseInt($qtyInput.val()) || 1;
 
-        var inc_value = $(this).closest('.product_data').find('.qty-input').val();
-        var value = parseInt(inc_value, 10);
-        value = isNaN(value) ? 0 : value;
-
-        if (value < 10) {
-            value++;
-            $(this).closest('.product_data').find('.qty-input').val(value);
+        if (qty < maxQty) {
+            qty += 1;
+            $qtyInput.val(qty);
+            updateCartQty($data, qty);  // 🔄 Call backend update
         }
     });
 
+    // --- Quantity Decrement ---
     $('.decrement-btn').click(function (e) {
         e.preventDefault();
+        let $data = $(this).closest('.product_data');
+        let $qtyInput = $data.find('.qty-input');
+        let qty = parseInt($qtyInput.val()) || 1;
 
-        var dec_value = $(this).closest('.product_data').find('.qty-input').val();
-        var value = parseInt(dec_value, 10);
-        value = isNaN(value) ? 0 : value;
-
-        if (value > 1) {
-            value--;
-            $(this).closest('.product_data').find('.qty-input').val(value);
+        if (qty > 1) {
+            qty -= 1;
+            $qtyInput.val(qty);
+            updateCartQty($data, qty);  // 🔄 Call backend update
         }
-    });
+    });  
 
-    $('.addToCartBtn').click(function (e){
+    // --- Add to Cart ---
+    $('.btn-add-to-cart').click(function (e) {
         e.preventDefault();
-
-        var product_id= $(this).closest('.product_data').find('.prod_id').val();
-        var product_qty=$(this).closest('.product_data').find('.qty-input').val();
-        var token=$('input[name=csrfmiddlewaretoken]').val();
-        $.ajax({
-            method:"POST",
-            url:"/add-to-cart",
-            data:{
-                'product_id':product_id,
-                'product_qty':product_qty,
-                csrfmiddlewaretoken:token
-            },
-            success:function(response){
-                console.log(response)
-                alertify.success(response.status)
-            }
-
+        let $data = $(this).closest('.product_data');
+        let url = $('#add-to-cart-url').val();
+        let payload = {
+            product_id: $data.find('.prod_id').val(),
+            product_qty: $data.find('.qty-input').val(),
+            csrfmiddlewaretoken: $('input[name=csrfmiddlewaretoken]').val()
+        };
+        postAjaxRequest(url, payload, function (response) {
+            alertify.success(response.status);
         });
     });
 
-    $('.update-cart-btn').click(function (e){
+    // --- Delete Cart Item ---
+    $('.btn-delete-cart-item').click(function (e) {
         e.preventDefault();
+        let $button = $(this);
+        let $data = $button.closest('.product_data');
 
-        var product_id= $(this).closest('.product_data').find('.prod_id').val();
-        var product_qty=$(this).closest('.product_data').find('.qty-input').val();
-        var token=$('input[name=csrfmiddlewaretoken]').val();
-        $.ajax({
-            method:"POST",
-            url:"update-cart",
-            data:{
-                'product_id':product_id,
-                'product_qty':product_qty,
-                csrfmiddlewaretoken:token
-            },
-            success:function(response){
-                console.log(response)
-                alertify.success(response.status)
-            },
+        let payload = {
+            product_id: $data.find('.prod_id').val(),
+            csrfmiddlewaretoken: $('input[name=csrfmiddlewaretoken]').val()
+        };
 
+        postAjaxRequest("/store/delete-cart-item/", payload, function (response) {
+            alertify.success(response.status);
+
+            // Remove the item DOM element directly
+            $data.fadeOut(300, function () {
+                $(this).remove();
+            });
+
+            // Then reload only totals if needed
+            $('.cart-summary').load(location.href + " .cart-summary");
         });
     });
 
-    $('.delete-cart-item').click(function (e){
+
+    // --- Wishlist Add ---
+    $('.btn-add-to-wishlist').click(function (e) {
         e.preventDefault();
+        let $data = $(this).closest('.product_data');
+        let productId = $data.find('.prod_id').val();
+        let payload = {
+            csrfmiddlewaretoken: $('input[name=csrfmiddlewaretoken]').val()
+        };
 
-        var product_id= $(this).closest('.product_data').find('.prod_id').val();
-        var token=$('input[name=csrfmiddlewaretoken]').val();
-        $.ajax({
-            method:"POST",
-            url:"delete-cart-item",
-            data:{
-                'product_id':product_id,
-                csrfmiddlewaretoken:token
-            },
-            success:function(response){
-                alertify.success(response.status)
-                $('.cartdata').load(location.href + (' .cartdata'));
-            },
-
-        });
-    });
-    $('.addToWishlist').click(function (e){
-        e.preventDefault();
-
-        var product_id= $(this).closest('.product_data').find('.prod_id').val();
-        var token=$('input[name=csrfmiddlewaretoken]').val();
-        $.ajax({
-            method:"POST",
-            url:"add-to-wishlist/",
-            data:{
-                'product_id':product_id,
-                csrfmiddlewaretoken:token
-            },
-            success:function(response){
-                console.log(response)
-                alertify.success(response.status)
-                
-            },
-
-
+        postAjaxRequest(`/store/add-to-wishlist/${productId}/`, payload, function (response) {
+            alertify.success(response.status);
         });
     });
 
-    $('.delete-wishlist-item').click(function (e){
+
+    // --- Wishlist Delete ---
+    $('.btn-delete-wishlist-item').click(function (e) {
         e.preventDefault();
+        let $data = $(this).closest('.product_data');
+        let payload = {
+            product_id: $data.find('.prod_id').val(),
+            csrfmiddlewaretoken: $('input[name=csrfmiddlewaretoken]').val()
+        };
 
-        var product_id= $(this).closest('.product_data').find('.prod_id').val();
-        var token=$('input[name=csrfmiddlewaretoken]').val();
-        $.ajax({
-            method:"POST",
-            url:"delete-wishlist-item",
-            data:{
-                'product_id':product_id,
-                csrfmiddlewaretoken:token
-            },
-            success:function(response){
-                console.log(response)
-                alertify.success(response.status)
-                $('.wishdata').load(location.href + (' .wishdata'));
-            },
+        postAjaxRequest("/store/delete-wishlist-item/", payload, function (response) {
+            alertify.success(response.status);
 
+            $data.fadeOut(300, function () {
+                $(this).remove();
+            });
         });
     });
+
 });

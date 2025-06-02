@@ -1,0 +1,65 @@
+{% load static %}
+<footer class="bg-dark text-light pt-5 pb-4">
+  <div class="container">
+    <div class="row gy-4">
+      <!-- About Section -->
+      <div class="col-md-4">
+        <h5 class="fw-bold mb-3">About Electrolyze</h5>
+        <p class="text-light opacity-75 small">
+          Electrolyze is your one-stop shop for cutting-edge electronics at unbeatable prices. Discover the latest gadgets and accessories with seamless shopping and exceptional quality.
+        </p>
+      </div>
+
+      <!-- Quick Links -->
+      <div class="col-md-4">
+        <h5 class="fw-bold mb-3">Quick Links</h5>
+        <ul class="list-unstyled">
+          <li class="mb-2">
+            <a href="{% url 'store:home' %}" class="text-light text-decoration-none opacity-75 hover-opacity">Home</a>
+          </li>
+          <li class="mb-2">
+            <a href="{% url 'store:collections' %}" class="text-light text-decoration-none opacity-75 hover-opacity">Collections</a>
+          </li>
+          <li class="mb-2">
+            <a href="{% url 'store:cart' %}" class="text-light text-decoration-none opacity-75 hover-opacity">Cart</a>
+          </li>
+          <li class="mb-2">
+            <a href="{% url 'store:wishlist' %}" class="text-light text-decoration-none opacity-75 hover-opacity">Wishlist</a>
+          </li>
+          <li class="mb-2">
+            <a href="{% url 'store:order' %}" class="text-light text-decoration-none opacity-75 hover-opacity">My Orders</a>
+          </li>
+        </ul>
+      </div>
+
+      <!-- Contact Section -->
+      <div class="col-md-4">
+        <h5 class="fw-bold mb-3">Contact Us</h5>
+        <ul class="list-unstyled text-light opacity-75 small">
+          <li class="mb-2"><i class="bi bi-envelope me-2"></i> support@electrolyze.com</li>
+          <li class="mb-2"><i class="bi bi-telephone me-2"></i> +12-3456-7890</li>
+          <li><i class="bi bi-geo-alt me-2"></i> 123 Tech Street, Bengaluru, India</li>
+        </ul>
+        <div class="mt-3 d-flex gap-2">
+          <a href="#" class="btn btn-outline-light btn-sm rounded-circle" title="Facebook">
+            <i class="bi bi-facebook"></i>
+          </a>
+          <a href="#" class="btn btn-outline-light btn-sm rounded-circle" title="Twitter">
+            <i class="bi bi-twitter"></i>
+          </a>
+          <a href="#" class="btn btn-outline-light btn-sm rounded-circle" title="Instagram">
+            <i class="bi bi-instagram"></i>
+          </a>
+          <a href="#" class="btn btn-outline-light btn-sm rounded-circle" title="LinkedIn">
+            <i class="bi bi-linkedin"></i>
+          </a>
+        </div>
+      </div>
+    </div>
+
+    <hr class="my-4 bg-light opacity-25">
+    <div class="text-center text-light opacity-75 small">
+      © 2025 <strong>Electrolyze</strong>. All rights reserved.
+    </div>
+  </div>
+</footer>

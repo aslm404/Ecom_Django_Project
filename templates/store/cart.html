@@ -1,0 +1,156 @@
+{% extends 'store/layouts/main.html' %}
+{% block content %}
+
+<!-- Breadcrumb Section -->
+<section class="py-3">
+    <div class="container">
+        <nav aria-label="breadcrumb">
+            <ol class="breadcrumb mb-0">
+                <li class="breadcrumb-item">
+                    <a href="{% url 'store:home' %}" class="text-decoration-none text-primary fw-medium">Home</a>
+                </li>
+                <li class="breadcrumb-item active fw-bold" aria-current="page">Cart</li>
+            </ol>
+        </nav>
+    </div>
+</section>
+
+<!-- Cart Section -->
+<section class="py-5">
+    <div class="container">
+        {% if cart %}
+            <div class="row g-4">
+                <!-- Cart Items -->
+                <div class="col-lg-8">
+                    <div class="card border-0 shadow-sm rounded-3 overflow-hidden">
+                        <div class="card-header customclr text-white p-3">
+                            <h5 class="mb-0">Your Cart ({{ cart|length }} items)</h5>
+                        </div>
+                        <div class="card-body p-4">
+                            {% for item in cart %}
+                                <div class="d-flex align-items-center border-bottom py-3 product_data">
+                                    <!-- Product Image -->
+                                    <div class="flex-shrink-0 me-3">
+                                        <img src="{{ item.product.image.url }}" alt="{{ item.product.name }}" 
+                                             class="rounded-2" style="width: 80px; height: 80px; object-fit: cover;">
+                                    </div>
+                                    <!-- Product Details -->
+                                    <div class="flex-grow-1">
+                                        <h6 class="mb-1 fw-semibold">{{ item.product.name }}</h6>
+                                        <small class="text-muted">Product ID: {{ item.product.id }}</small>
+                                    </div>
+                                    <!-- Price -->
+                                    <div class="text-end ms-3">
+                                        <span class="fw-bold text-dark">₹{{ item.product.selling_price }}</span>
+                                    </div>
+                                    <!-- Quantity -->
+                                    <div class="ms-3">
+                                        <form class="mb-4 add-to-cart-form">
+                                            {% csrf_token %}
+                                            <input type="hidden" class="prod_id" value="{{ item.product.id }}">
+                                            {% if item.product.quantity >= item.product_qty %}
+                                                <div class="input-group input-group-sm" style="width: 120px;">
+                                                    <button class="btn btn-outline-secondary btn-decrement-btn" type="button">
+                                                        <i class="bi bi-dash"></i>
+                                                    </button>
+                                                    <input type="number" name="quantity"
+                                                        class="form-control text-center qty-input"
+                                                        value="{{ item.product_qty }}" min="1" max="10">
+                                                    <button class="btn btn-outline-secondary btn-increment-btn" type="button">
+                                                        <i class="bi bi-plus"></i>
+                                                    </button>
+                                                </div>
+                                            {% else %}
+                                                <span class="badge bg-danger rounded-pill">Out of Stock</span>
+                                            {% endif %}
+                                        </form>
+                                    </div>
+                                    <!-- Remove Button -->
+                                    <div class="ms-3">
+                                        <button class="btn btn-outline-danger btn-sm btn-delete-cart-item" 
+                                                type="button" title="Remove item">
+                                            <i class="bi bi-trash"></i>
+                                        </button>
+                                    </div>
+                                </div>
+                            {% endfor %}
+                        </div>
+                    </div>
+                </div>
+                <!-- Cart Summary -->
+                <div class="col-lg-4">
+                    <div class="card border-0 shadow-sm rounded-3">
+                        <div class="card-header bg-success text-white p-3">
+                            <h5 class="mb-0">Order Summary</h5>
+                        </div>
+                        <div class="card-body p-4">
+                            <a href="{% url 'store:checkout' %}" 
+                               class="btn btn-success w-100 rounded-pill py-2 shadow-sm">
+                                Proceed to Checkout <i class="bi bi-arrow-right ms-2"></i>
+                            </a>
+                            <a href="{% url 'store:collections' %}" 
+                               class="btn btn-outline-primary w-100 rounded-pill py-2 mt-2">
+                                <i class="bi bi-arrow-left me-2"></i> Continue Shopping
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        {% else %}
+            <!-- Empty Cart -->
+            <div class="text-center py-5">
+                <div class="card border-0 shadow-sm rounded-3 p-5 mx-auto" style="max-width: 500px;">
+                    <img src="https://cdn-icons-png.flaticon.com/512/2038/2038854.png" 
+                         alt="Empty Cart" 
+                         class="mx-auto mb-3" 
+                         style="width: 120px;">
+                    <h4 class="text-dark fw-semibold">Your Cart is Empty</h4>
+                    <p class="text-muted mb-4">Looks like you haven't added anything to your cart yet.</p>
+                    <a href="{% url 'store:collections' %}" 
+                       class="btn customclr btn-primary rounded-pill px-4 py-2">
+                        <i class="bi bi-cart-plus me-2"></i> Start Shopping
+                    </a>
+                </div>
+            </div>
+        {% endif %}
+    </div>
+</section>
+
+<script>
+    function getCSRFToken() {
+        return document.querySelector('[name=csrfmiddlewaretoken]').value;
+    }
+
+    document.querySelectorAll('.btn-increment-btn, .btn-decrement-btn').forEach(btn => {
+        btn.addEventListener('click', function() {
+            const form = btn.closest('form');
+            const prodId = form.querySelector('.prod_id').value;
+            const qtyInput = form.querySelector('.qty-input');
+            let qty = parseInt(qtyInput.value);
+
+            if (btn.classList.contains('btn-increment-btn') && qty < 10) qty++;
+            if (btn.classList.contains('btn-decrement-btn') && qty > 1) qty--;
+
+            qtyInput.value = qty;
+
+            fetch("{% url 'store:update_cart' %}", {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/x-www-form-urlencoded',
+                    'X-CSRFToken': getCSRFToken()
+                },
+                body: new URLSearchParams({
+                    product_id: prodId,
+                    product_qty: qty
+                })
+            })
+            .then(res => res.json())
+            .then(data => {
+                console.log(data.status);
+                // Optionally update subtotal, etc.
+            });
+        });
+    });
+</script>
+
+{% endblock %}

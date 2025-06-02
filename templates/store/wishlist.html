@@ -1,0 +1,85 @@
+{% extends 'store/layouts/main.html' %}
+
+{% block content %}
+
+<!-- Breadcrumb Section -->
+<section class="py-4">
+  <div class="container">
+    <nav aria-label="breadcrumb">
+      <ol class="breadcrumb mb-0">
+        <li class="breadcrumb-item">
+          <a href="{% url 'store:home' %}" class="text-decoration-none text-primary fw-medium">Home</a>
+        </li>
+        <li class="breadcrumb-item active fw-bold" aria-current="page">Wishlist</li>
+      </ol>
+    </nav>
+  </div>
+</section>
+
+<!-- Wishlist Section -->
+<section class="py-5">
+  <div class="container">
+    <div class="card border-0 shadow-sm rounded-3">
+      <div class="card-header customclr text-white p-3">
+        <h3 class="mb-0 fw-semibold">My Wishlist</h3>
+      </div>
+      <div class="card-body p-4">
+        {% if wishlist %}
+          <div class="row g-4">
+            {% for item in wishlist %}
+              <div class="col-12">
+                <div class="card border-0 shadow-sm rounded-3 product_data">
+                  <div class="row g-0 align-items-center p-3">
+                    <!-- Product Image -->
+                    <div class="col-12 col-md-2 text-center">
+                      <img src="{{ item.product.image.url }}" 
+                           alt="{{ item.product.name }}" 
+                           class="img-fluid rounded" 
+                           style="max-height: 80px; max-width: 80px; object-fit: cover;">
+                    </div>
+                    <!-- Product Name -->
+                    <div class="col-12 col-md-4 d-flex align-items-center">
+                      <h5 class="mb-0 text-dark fw-semibold text-truncate">{{ item.product.name }}</h5>
+                    </div>
+                    <!-- Product Price -->
+                    <div class="col-12 col-md-3 d-flex align-items-center">
+                      <h6 class="mb-0 text-success fw-bold">₹{{ item.product.selling_price|floatformat:2 }}</h6>
+                    </div>
+                    <!-- Actions -->
+                    <div class="col-12 col-md-3 d-flex justify-content-md-end align-items-center gap-2 mt-2 mt-md-0">
+                      <input type="hidden" class="prod_id" value="{{ item.product.id }}">
+                      {% csrf_token %}
+                      <a href="{% url 'store:productview' item.product.category.slug item.product.slug %}" 
+                         class="btn customclr btn-primary btn-sm rounded-pill px-3">
+                        <i class="bi bi-eye me-1"></i> View
+                      </a>
+                        <input type="hidden" class="prod_id" value="{{ item.product.id }}">
+                        <button class="btn btn-danger btn-sm rounded-pill px-3 btn-delete-wishlist-item">
+                          <i class="bi bi-trash"></i> Remove
+                        </button>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            {% endfor %}
+          </div>
+        {% else %}
+          <div class="text-center py-5">
+            <img src="https://cdn-icons-png.flaticon.com/512/2038/2038854.png" 
+                 alt="Empty Wishlist" 
+                 class="mx-auto mb-3" 
+                 style="width: 120px;">
+            <h4 class="text-dark fw-semibold">Your Wishlist is Empty</h4>
+            <p class="text-muted mb-4">Browse our collections and add your favorite products to your wishlist.</p>
+            <a href="{% url 'store:collections' %}" 
+               class="btn customclr btn-primary rounded-pill px-4 py-2">
+              <i class="bi bi-cart-plus me-2"></i> Explore Collections
+            </a>
+          </div>
+        {% endif %}
+      </div>
+    </div>
+  </div>
+</section>
+
+{% endblock %}

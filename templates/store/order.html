@@ -1,0 +1,85 @@
+{% extends 'store/layouts/main.html' %}
+{% block content %}
+
+<!-- Breadcrumb Section -->
+<section class="py-4">
+    <div class="container">
+        <nav aria-label="breadcrumb">
+            <ol class="breadcrumb mb-0">
+                <li class="breadcrumb-item">
+                    <a href="{% url 'store:home' %}" class="text-decoration-none text-primary fw-medium">Home</a>
+                </li>
+                <li class="breadcrumb-item active fw-bold" aria-current="page">My Orders</li>
+            </ol>
+        </nav>
+    </div>
+</section>
+
+<!-- Orders Section -->
+<section class="py-5">
+    <div class="container">
+        <div class="card border-0 shadow-sm rounded-3">
+            <div class="card-header customclr text-white p-3">
+                <h3 class="mb-0 fw-semibold">My Orders</h3>
+            </div>
+            <div class="card-body p-4">
+                {% if orders %}
+                    <div class="table-responsive">
+                        <table class="table align-middle table-hover mb-0">
+                            <thead class="table-light">
+                                <tr>
+                                    <th scope="col">Order Date</th>
+                                    <th scope="col">Tracking Number</th>
+                                    <th scope="col">Total Price</th>
+                                    <th scope="col">Status</th>
+                                    <th scope="col" class="text-center">Action</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for item in orders %}
+                                    <tr>
+                                        <td>{{ item.created_at|date:"M d, Y" }}</td>
+                                        <td class="text-truncate" style="max-width: 150px;">{{ item.tracking_no }}</td>
+                                        <td class="fw-bold">₹{{ item.total_price|floatformat:2 }}</td>
+                                        <td>
+                                            {% if item.status == 'Pending' %}
+                                                <span class="badge bg-warning text-dark rounded-pill px-3 py-2 fw-medium">{{ item.status }}</span>
+                                            {% elif item.status == 'Completed' %}
+                                                <span class="badge bg-success rounded-pill px-3 py-2 fw-medium">{{ item.status }}</span>
+                                            {% elif item.status == 'Cancelled' %}
+                                                <span class="badge bg-danger rounded-pill px-3 py-2 fw-medium">{{ item.status }}</span>
+                                            {% else %}
+                                                <span class="badge bg-secondary rounded-pill px-3 py-2 fw-medium">{{ item.status }}</span>
+                                            {% endif %}
+                                        </td>
+                                        <td class="text-center">
+                                            <a href="{% url 'store:orderview' item.tracking_no %}" 
+                                               class="btn customclr btn-primary btn-sm rounded-pill px-3">
+                                                View Details
+                                            </a>
+                                        </td>
+                                    </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                {% else %}
+                    <div class="text-center py-5">
+                        <img src="https://cdn-icons-png.flaticon.com/512/2038/2038854.png" 
+                             alt="No Orders" 
+                             class="mx-auto mb-3" 
+                             style="width: 120px;">
+                        <h4 class="text-dark fw-semibold">No Orders Found</h4>
+                        <p class="text-muted mb-4">You haven't placed any orders yet.</p>
+                        <a href="{% url 'store:collections' %}" 
+                           class="btn btn-primary rounded-pill px-4 py-2">
+                            <i class="bi bi-cart-plus me-2"></i> Start Shopping
+                        </a>
+                    </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</section>
+
+{% endblock %}

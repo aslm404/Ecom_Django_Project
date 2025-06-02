@@ -1,0 +1,50 @@
+{% load static %}
+<div id="homeCarousel" class="carousel slide shadow-sm rounded-3 overflow-hidden" data-bs-ride="carousel">
+  <!-- Indicators -->
+  <div class="carousel-indicators">
+    <button type="button" data-bs-target="#homeCarousel" data-bs-slide-to="0" class="active" aria-current="true" aria-label="Slide 1"></button>
+    <button type="button" data-bs-target="#homeCarousel" data-bs-slide-to="1" aria-label="Slide 2"></button>
+    <button type="button" data-bs-target="#homeCarousel" data-bs-slide-to="2" aria-label="Slide 3"></button>
+  </div>
+
+  <!-- Slides -->
+  <div class="carousel-inner">
+    <div class="carousel-item active">
+      <img src="{% static 'images/m1.jpg' %}" class="d-block w-100 img-fluid" alt="Explore Latest Gadgets" 
+           style="object-fit: cover; height: 500px;">
+      <div class="carousel-caption d-none d-md-block">
+        <h3 class="fw-bold text-white">Discover Cutting-Edge Gadgets</h3>
+        <p class="text-white opacity-75">Shop the latest in electronics with unbeatable deals.</p>
+        <a href="{% url 'store:collections' %}" class="btn customclr2 btn-primary rounded-pill px-4">Shop Now</a>
+      </div>
+    </div>
+    <div class="carousel-item">
+      <img src="{% static 'images/m2.jpg' %}" class="d-block w-100 img-fluid" alt="Premium Accessories" 
+           style="object-fit: cover; height: 500px;">
+      <div class="carousel-caption d-none d-md-block">
+        <h3 class="fw-bold text-white">Premium Accessories Await</h3>
+        <p class="text-white opacity-75">Elevate your tech with our curated collection.</p>
+        <a href="{% url 'store:collections' %}" class="btn customclr2 btn-primary rounded-pill px-4">Explore More</a>
+      </div>
+    </div>
+    <div class="carousel-item">
+      <img src="{% static 'images/m3.jpg' %}" class="d-block w-100 img-fluid" alt="Exclusive Offers" 
+           style="object-fit: cover; height: 500px;">
+      <div class="carousel-caption d-none d-md-block">
+        <h3 class="fw-bold text-white">Exclusive Offers Just for You</h3>
+        <p class="text-white opacity-75">Grab the best deals before they’re gone!</p>
+        <a href="{% url 'store:collections' %}" class="btn customclr2 btn-primary rounded-pill px-4">Discover Deals</a>
+      </div>
+    </div>
+  </div>
+
+  <!-- Controls -->
+  <button class="carousel-control-prev" type="button" data-bs-target="#homeCarousel" data-bs-slide="prev">
+    <span class="carousel-control-prev-icon bg-dark bg-opacity-75 rounded-circle p-3" aria-hidden="true"></span>
+    <span class="visually-hidden">Previous</span>
+  </button>
+  <button class="carousel-control-next" type="button" data-bs-target="#homeCarousel" data-bs-slide="next">
+    <span class="carousel-control-next-icon bg-dark bg-opacity-75 rounded-circle p-3" aria-hidden="true"></span>
+    <span class="visually-hidden">Next</span>
+  </button>
+</div>

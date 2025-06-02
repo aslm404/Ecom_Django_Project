@@ -1,0 +1,70 @@
+{% extends 'store/layouts/main.html' %}
+{% load static %}
+{% block title %}Search Results{% endblock title %}
+
+{% block content %}
+<section class="py-5 bg-light">
+  <div class="container">
+    {% if products %}
+      <!-- Search Results Header -->
+      <div class="text-center mb-5">
+        <h3 class="fw-bold mb-2">Search Results for <span class="text-primary">"{{ request.GET.search|default:'' }}"</span></h3>
+        <p class="text-muted">Found {{ products|length }} product{{ products|length|pluralize }}</p>
+        <hr class="mx-auto bg-primary" style="width: 100px; border-width: 4px;">
+      </div>
+
+      <!-- Product Grid -->
+      <div class="row row-cols-1 row-cols-sm-2 row-cols-md-3 row-cols-lg-4 g-4">
+        {% for product in products %}
+          <div class="col">
+            <div class="card h-100 border-0 shadow-sm rounded-3 overflow-hidden">
+              <a href="{% url 'store:productview' product.category.slug product.slug %}" 
+                 class="text-decoration-none text-dark">
+                <!-- Product Image -->
+                <div class="position-relative overflow-hidden" style="height: 250px;">
+                  <img src="{% if product.image %}{{ product.image.url }}{% else %}{% static 'images/default_product.png' %}{% endif %}" 
+                       alt="{{ product.name }}" 
+                       class="w-100 h-100 object-fit-cover" 
+                       style="transition: transform 0.3s ease;">
+                </div>
+                <!-- Product Details -->
+                <div class="card-body text-center">
+                  <h5 class="fw-semibold text-dark text-truncate mb-2">{{ product.name }}</h5>
+                  <p class="text-muted small text-truncate mb-3" style="max-height: 3.6em;">
+                    {{ product.description|truncatechars:100 }}
+                  </p>
+                  <div class="d-flex justify-content-center align-items-center gap-3">
+                    <span class="text-success fw-bold fs-5">₹{{ product.selling_price|floatformat:2 }}</span>
+                    <span class="text-muted text-decoration-line-through">
+                      ₹{{ product.original_price|floatformat:2 }}
+                    </span>
+                  </div>
+                </div>
+              </a>
+            </div>
+          </div>
+        {% endfor %}
+      </div>
+    {% else %}
+      <!-- Empty State -->
+      <div class="text-center py-5">
+        <div class="card border-0 shadow-sm rounded-3 p-5 mx-auto" style="max-width: 500px;">
+          <img src="{% static 'images/elogo.png' %}" 
+               alt="No Results" 
+               class="mx-auto mb-3" 
+               style="width: 120px;">
+          <h4 class="text-dark fw-semibold">No Results Found</h4>
+          <p class="text-muted mb-4">
+            No products found for <span class="text-primary">"{{ request.GET.search|default:'' }}"</span>. Try searching with different keywords.
+          </p>
+          <a href="{% url 'store:collections' %}" 
+             class="btn btn-primary rounded-pill px-4 py-2">
+            <i class="bi bi-arrow-left me-2"></i> Back to Collections
+          </a>
+        </div>
+      </div>
+    {% endif %}
+  </div>
+</section>
+
+{% endblock content %}

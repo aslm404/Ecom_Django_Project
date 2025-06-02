@@ -1,0 +1,124 @@
+{% extends 'store/layouts/main.html' %}
+{% block content %}
+
+<!-- Breadcrumb Section -->
+<section class="py-3">
+    <div class="container">
+        <nav aria-label="breadcrumb">
+            <ol class="breadcrumb mb-0">
+                <li class="breadcrumb-item">
+                    <a href="{% url 'store:home' %}" class="text-decoration-none text-primary fw-medium">Home</a>
+                </li>
+                <li class="breadcrumb-item">
+                    <a href="{% url 'store:collections' %}" class="text-decoration-none text-primary fw-medium">Collections</a>
+                </li>
+                <li class="breadcrumb-item">
+                    <a href="{% url 'store:collectionsview' product.category.slug %}" class="text-decoration-none text-primary fw-medium">
+                        {{ product.category.name }}
+                    </a>
+                </li>
+                <li class="breadcrumb-item active fw-bold text-truncate" style="max-width: 250px;" aria-current="page">
+                    {{ product.name }}
+                </li>
+            </ol>
+        </nav>
+    </div>
+</section>
+
+<!-- Product Detail Section -->
+<section class="py-5">
+    <div class="container product_data">
+        <input type="hidden" id="add-to-cart-url" value="{% url 'store:add_to_cart' %}">
+        <div class="row g-4">
+            <!-- Product Image -->
+            <div class="col-lg-6">
+                <div class="card border-0 shadow-sm rounded-3 overflow-hidden position-relative">
+                    <img src="{{ product.image.url }}" class="card-img-top" alt="{{ product.name }}" 
+                         style="height: 450px; object-fit: cover; transition: transform 0.3s ease;">
+                    {% if product.tag %}
+                        <span class="badge bg-danger rounded-pill position-absolute top-0 start-0 m-3 px-3 py-2 fw-semibold shadow-sm">
+                            {{ product.tag }}
+                        </span>
+                    {% endif %}
+                </div>
+            </div>
+
+            <!-- Product Details -->
+            <div class="col-lg-6">
+                <div class="card border-0 shadow-sm rounded-3 h-100">
+                    <div class="card-body d-flex flex-column p-4">
+                        <h1 class="fw-bold mb-2">{{ product.name }}</h1>
+                        {% if product.trending %}
+                            <span class="badge bg-warning text-dark mb-3 px-3 py-2 fs-6 fw-semibold">Trending</span>
+                        {% endif %}
+                        <hr class="my-3">
+                        
+                        <!-- Pricing -->
+                        <div class="mb-3">
+                            <span class="text-muted text-decoration-line-through fs-5">Rs {{ product.original_price | floatformat:2 }}</span>
+                            <span class="text-success fw-bold fs-3 ms-3">Rs {{ product.selling_price | floatformat:2 }}</span>
+                        </div>
+
+                        <!-- Stock Status -->
+                        <div class="mb-4">
+                            {% if product.quantity > 0 %}
+                                <span class="badge bg-success fs-6 px-3 py-2 fw-medium">In Stock</span>
+                            {% else %}
+                                <span class="badge bg-danger fs-6 px-3 py-2 fw-medium">Out of Stock</span>
+                            {% endif %}
+                        </div>
+
+                        <!-- Short Description -->
+                        <p class="text-muted mb-4">{{ product.small_description }}</p>
+
+                        <!-- Quantity Selector -->
+                        <form id="add-to-cart-form" class="mb-4">
+                            {% csrf_token %}
+                            <input type="hidden" name="product_id" value="{{ product.id }}" class="prod_id">
+                            <label for="quantity" class="form-label fw-semibold">Quantity</label>
+                            <div class="input-group w-50" style="max-width: 150px;">
+                                <button type="button" class="btn btn-outline-secondary decrement-btn">
+                                    <i class="bi bi-dash"></i>
+                                </button>
+                                <input type="number" name="quantity" 
+                                       class="form-control text-center qty-input" 
+                                       value="1" min="1" max="10">
+                                <button type="button" class="btn btn-outline-secondary increment-btn">
+                                    <i class="bi bi-plus"></i>
+                                </button>
+                            </div>
+                        </form>
+
+                        <!-- Action Buttons -->
+                        <div class="d-flex gap-3">
+                            {% if product.quantity > 0 %}
+                                <button type="button" class="btn customclr btn-primary rounded-pill px-4 py-2 btn-add-to-cart">
+                                    <i class="bi bi-cart-plus me-2"></i> Add to Cart
+                                </button>
+                            {% endif %}
+                            <button type="button" class="btn btn-outline-danger rounded-pill px-4 py-2 btn-add-to-wishlist">
+                                <i class="bi bi-heart me-2"></i> Add to Wishlist
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Product Description -->
+        <div class="row mt-5">
+            <div class="col-12">
+                <div class="card border-0 shadow-sm rounded-3">
+                    <div class="card-header customclr text-white p-3">
+                        <h4 class="mb-0">Product Description</h4>
+                    </div>
+                    <div class="card-body p-4">
+                        <p class="fs-5 text-muted">{{ product.description }}</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+{% endblock %}

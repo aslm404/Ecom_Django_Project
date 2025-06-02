@@ -1,0 +1,76 @@
+{% extends 'store/layouts/main.html' %}
+{% block content %}
+
+<!-- Breadcrumb Section -->
+<section class="py-4">
+    <div class="container">
+        <nav aria-label="breadcrumb">
+            <ol class="breadcrumb mb-0">
+                <li class="breadcrumb-item">
+                    <a href="{% url 'store:home' %}" class="text-decoration-none text-primary fw-medium">Home</a>
+                </li>
+                <li class="breadcrumb-item active fw-bold" aria-current="page">Collections</li>
+            </ol>
+        </nav>
+    </div>
+</section>
+
+<!-- Collections Section -->
+<section class="py-5">
+    <div class="container">
+        <!-- Header -->
+        <div class="text-center mb-5">
+            <h1 class="display-4 fw-bold customclr2 mb-3">Explore Our Collections</h1>
+            <p class="text-muted fs-5 mb-4">Discover curated categories designed for your unique style and needs.</p>
+            <hr class="mx-auto bg-primary" style="width: 100px; border-width: 4px;">
+        </div>
+
+        <!-- Categories Grid -->
+        <div class="row row-cols-1 row-cols-sm-2 row-cols-md-3 row-cols-lg-4 g-4">
+            {% for item in categories %}
+                <div class="col">
+                    <a href="{% url 'store:collectionsview' item.slug %}" class="text-decoration-none">
+                        <div class="card h-100 border-0 shadow-sm rounded-3 overflow-hidden">
+                            <!-- Category Image -->
+                            <div class="position-relative overflow-hidden" style="height: 250px;">
+                                <img src="{{ item.image.url }}" 
+                                     alt="{{ item.name }}" 
+                                     class="card-img-top w-100 h-100 object-fit-cover" 
+                                     style="transition: transform 0.3s ease;">
+                                <!-- Overlay -->
+                                <div class="overlay position-absolute top-0 start-0 w-100 h-100 bg-dark bg-opacity-50 d-flex align-items-center justify-content-center opacity-0" 
+                                     style="transition: opacity 0.3s ease; border-radius: 0.3rem 0.3rem 0 0;">
+                                    <h5 class="text-white fw-semibold mb-0">Explore Now</h5>
+                                </div>
+                            </div>
+                            <!-- Category Name -->
+                            <div class="card-body text-center py-3">
+                                <h5 class="card-title text-dark fw-bold mb-0">{{ item.name }}</h5>
+                            </div>
+                        </div>
+                    </a>
+                </div>
+            {% endfor %}
+        </div>
+
+        <!-- Empty State -->
+        {% if not categories %}
+            <div class="text-center py-5">
+                <div class="card border-0 shadow-sm rounded-3 p-5 mx-auto" style="max-width: 500px;">
+                    <img src="https://cdn-icons-png.flaticon.com/512/2038/2038854.png" 
+                         alt="No Categories" 
+                         class="mx-auto mb-3" 
+                         style="width: 120px;">
+                    <h4 class="text-dark fw-semibold">No Categories Available</h4>
+                    <p class="text-muted mb-4">It seems there are no categories to display at the moment.</p>
+                    <a href="{% url 'store:home' %}" 
+                       class="btn btn-primary rounded-pill px-4 py-2">
+                        <i class="bi bi-arrow-left me-2"></i> Back to Home
+                    </a>
+                </div>
+            </div>
+        {% endif %}
+    </div>
+</section>
+
+{% endblock %}

@@ -1,18 +1,14 @@
-from django.contrib.auth.models import User
-from django.shortcuts import redirect,render
-from django.contrib import  messages
-from store.models import Product,Cart,Wishlist,Orderitem,Order,Profile
 from django.contrib.auth.decorators import login_required
-import random
-from django.http.response import JsonResponse
+from django.shortcuts import render, get_object_or_404
+from store.models import Order, Orderitem
 
+@login_required(login_url='store:loginpage')
 def order_view(request):
-    orders=Order.objects.filter(user=request.user)
-    context={'orders':orders }
-    return render(request,"store/order.html",context)
+    orders = Order.objects.filter(user=request.user).order_by('-created_at')
+    return render(request, "store/order.html", {'orders': orders})
 
-def view_order(request,t_no):
-    order=Order.objects.filter(tracking_no=t_no).filter(user=request.user).first()
-    orderitem=Orderitem.objects.filter(order=order)
-    context={'order':order,'orderitem':orderitem}
-    return render(request,"store/orderitem.html",context)
+@login_required(login_url='store:loginpage')
+def view_order(request, t_no):
+    order = get_object_or_404(Order, tracking_no=t_no, user=request.user)
+    order_items = Orderitem.objects.filter(order=order)
+    return render(request, "store/orderitem.html", {'order': order, 'orderitem': order_items})
